@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>Favorites</title>
+    <style>
+        /* Reuse styles from index.html */
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f4f4f9;
+            background: linear-gradient(135deg, #f4f9ff, #e0e8ff, #f4f4fa);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+        .navbar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg,  rgba(255, 223, 186, 0.5), #1a2a6c);
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+
+        .sidebar-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 10vh; /* Full viewport height for centering */
+        }
+
+        /* Hamburger menu icon */
+        .menu-icon {
+            font-size: 30px;
+            cursor: pointer;
+            color: #1a2a6c;
+            margin-left: 15px;
+        }
+
+        .heart-icon{
+            color: #e2ebf8;
+            size: 30px;
+        }
+         /* Sidebar styling */
+        #sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: -250px; /* Hidden by default */
+            background-color: #1a2a6c;
+            background: linear-gradient(135deg, #1a2a6c,  rgba(255, 223, 186, 0.5), #1a2a6c);
+            color: white;
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+            z-index: 1001;
+        }
+
+        #sidebar a {
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: block;
+            transition: 0.3s;
+        }
+
+        #sidebar a:hover {
+            background-color: #333;
+        }
+
+        /* Close button in the sidebar */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        /* Logo on left */
+        .navbar img {
+            width: 60px;
+            height: auto;
+            border-radius: 50%;
+            right: 20px;
+            left: 50%;
+            transition: transform 0.3s ease;
+            margin-left: 10px;
+            margin-top: 4px;
+        }
+
+        .navbar img:hover {
+            transform: scale(1.05);
+        }
+
+        .Container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+
+        .card-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .card-description {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .Play {
+            display: inline-block;
+            text-decoration: none;
+            color: #1a2a6c;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .Play:hover {
+            background-color: #1a2a6c;
+            color: #ffffff;
+        }
+
+        .Bottom {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #1a2a6c;
+            color: white;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <span class="close-btn" onclick="toggleSidebar()">&times;</span>
+        <a href="index.html">Home</a>
+        <a href="favourites.html">Favorites</a>
+        <a href="library.html">Library</a>
+        <a href="signin.html">Sign In</a>
+    </div>  
+    <div class="navbar">
+        <!-- Hamburger menu icon -->
+        <div class="sidebar-container">
+            <div class="material-icons menu-icon" onclick="toggleSidebar()">menu</div> 
+        </div>
+        <div class="logo-container">
+        <img src="media/Celestial Symphony.webp" alt="Celestial Symphony Logo">
+        </div>
+    
+        <a href="index.html" style="position: absolute; left: 1227px; top: 28px;">
+            <span class="material-icons" style="font-size: 30px; color: #e2ebf8;">home</span>
+        </a>
+        <a href="favourites.html" style="position: absolute; left: 1194px; top: 31px;">
+            <i class="material-icons heart-icon" title="favourites">favorite_border</i></a> 
+            <a href="signin.html" style="position: absolute; left: 1157px; top: 28px; color: #cfdef3;">
+                <span class="material-icons" style="font-size: 30px; color: #e2ebf8;">person</span>
+            </a> 
+    </div>
+
+<h1 class="Artist" style="margin-top:35px; margin-bottom: 10px;">Your Favorite Songs</h1>
+<div class="Container" id="favoritesContainer"></div>
+
+<div class="Bottom">
+    <p>&copy; 2024 Celestial Symphony</p>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.style.left = sidebar.style.left === "0px" ? "-250px" : "0px";
+    }
+
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    const favoritesContainer = document.getElementById("favoritesContainer");
+
+    favorites.forEach(songTitle => {
+        const songCard = document.createElement("div");
+        songCard.className = "card";
+
+    const fileName = songTitle.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+
+    songCard.innerHTML = `
+        
+        <div class="card-content">
+            <h3 class="card-title">${songTitle}</h3>
+        </div>
+    `;
+    favoritesContainer.appendChild(songCard);
+    });
+
+</script>
+</body>
+</html>

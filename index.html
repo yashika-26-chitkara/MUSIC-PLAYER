@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>Music Player</title>
+    <style>
+    * {
+        padding: 0;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #f4f4f9;
+        background: linear-gradient(135deg, #f4f9ff, #e0e8ff, #f4f4fa); 
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+    }
+    /* Logo Overlay */
+    #logoOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px); /* Blurred background effect */
+      animation: fadeOut 2s ease 3s forwards; /* Fades out after 3 seconds */
+    }
+
+    /* Logo Image */
+    #logoContainer img {
+      width: 500px;
+      box-shadow: 0 10px 60px black;
+      border-radius: 50%;
+      animation: scaleUp 1.5s ease; /* Scale up effect for the logo */
+    }
+
+    /* Fade-out animation */
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    /* Scale-up animation for logo */
+    @keyframes scaleUp {
+      0% { transform: scale(0.5); }
+      100% { transform: scale(1); }
+    }
+
+    /* Title section with logo and search */
+    .navbar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg,  rgba(255, 223, 186, 0.5), #1a2a6c);
+        border-radius: 15px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .sidebar-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 10vh; /* Full viewport height for centering */
+    }
+
+     /* Hamburger menu icon */
+    .menu-icon {
+        font-size: 30px;
+        cursor: pointer;
+        color: #1a2a6c;
+        margin-left: 15px;
+    }
+
+    .heart-icon{
+        color: #e2ebf8;
+        size: 30px;
+    }
+    /* Sidebar styling */
+    #sidebar {
+        height: 100%;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: -250px; /* Hidden by default */
+        background-color: #1a2a6c;
+        background: linear-gradient(135deg, #1a2a6c,  rgba(255, 223, 186, 0.5), #1a2a6c);
+        color: white;
+        overflow-x: hidden;
+        transition: 0.3s;
+        padding-top: 60px;
+        z-index: 1001;
+    }
+
+    #sidebar a {
+        padding: 10px 20px;
+        text-decoration: none;
+        font-size: 18px;
+        color: white;
+        display: block;
+        transition: 0.3s;
+    }
+
+    #sidebar a:hover {
+        background-color: #333;
+    }
+
+    /* Close button in the sidebar */
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 30px;
+        cursor: pointer;
+    }
+
+    /* Logo on left */
+    .navbar img {
+        width: 60px;
+        height: auto;
+        border-radius: 50%;
+        right: 20px;
+        left: 50%;
+        transition: transform 0.3s ease;
+        margin-left: 10px;
+        margin-top: 4px;
+    }
+
+    .navbar img:hover {
+        transform: scale(1.05);
+    }
+
+    .Container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+        max-width: 1200px;
+    }
+
+    .card {
+        background: linear-gradient(135deg, #e0eafc, #cfdef3);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .card-image img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .card-title {
+        font-size: 1.5em;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .card-description {
+        font-size: 1em;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .Play {
+        display: inline-block;
+        text-decoration: none;
+        color: #1a2a6c;
+        font-weight: bold;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .Play:hover {
+        background-color: #1a2a6c;
+        color: #ffffff;
+    }
+
+    .Bottom {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        background-color: #1a2a6c;
+        color: white;
+        font-size: 0.9em;
+        margin-top: 20px;
+    }
+
+    .search-container {
+        width: 100%;
+        max-width: 300px;
+        margin-left: 740px;
+        display: flex;
+        justify-content: center;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #e2ebf8;
+        border: 1px solid #1a2a6c;
+        border-radius: 5px;
+    }
+
+    #searchInput {
+        width: 100%;
+        padding: 4px;
+        font-size: 16px;
+        background-color: #e2ebf8;
+        border-radius: 5px;
+        outline: none;
+        border: 1px solid #e2ebf8;
+    }
+    .search-container .search-icon {
+        color: #888;
+        cursor: pointer;
+        position: relative;
+    }
+    .search-bar .search-icon:hover::after {
+        content: "Search";
+        position: absolute;
+        top: -25px;
+        left: -10px;
+        background: #333;
+        color: #fff;
+        padding: 2px 5px;
+        border-radius: 5px;
+        font-size: 12px;
+    }
+    </style>
+
+</head>
+<body>
+<div id="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">&times;</span>
+    <a href="index.html">Home</a>
+    <a href="favourites.html">Favorites</a>
+    <a href="library.html">Library</a>
+    <a href="signin.html">Sign In</a>
+</div>
+
+<div id="logoOverlay">
+    <div id="logoContainer">
+      <img src="media/Celestial Symphony.webp" alt="Celestial Symphony Logo" id="logoImage">
+    </div>
+</div>    
+
+<div class="navbar">
+    <!-- Hamburger menu icon -->
+    <div class="sidebar-container">
+        <div class="material-icons menu-icon" onclick="toggleSidebar()">menu</div> 
+    </div>
+    <div class="logo-container">
+    <img src="media/Celestial Symphony.webp" alt="Celestial Symphony Logo">
+    </div>
+    
+    <div class="search-container">
+        <span class="material-icons search-icon" title="Search">search</span>
+        <input type="text" id="searchInput" placeholder="Search by Artist name...">
+    </div>
+
+    <a href="index.html" style="position: absolute; left: 1207px; top: 28px;">
+        <span class="material-icons" style="font-size: 30px; color: #e2ebf8;">home</span>
+    </a>
+    <a href="favourites.html" style="position: absolute; left: 1174px; top: 31px;">
+        <i class="material-icons heart-icon" title="favourites">favorite_border</i></a> 
+        <a href="signin.html" style="position: absolute; left: 830px; top: 28px; color: #cfdef3;">
+            <span class="material-icons" style="font-size: 30px; color: #e2ebf8;">person</span>
+        </a> 
+</div>
+
+<div class="Container">
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Closer - August Moon.jfif" alt="Closer">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Closer</h3>
+            <p class="card-description">August Moon</p>
+            <a href="songs/song1.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/ka_albumare.jpg" alt="Jee Ni Lagda">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Jee Ni Lagda</h3>
+            <p class="card-description">Karan Aujla</p>
+            <a href="songs/song2.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Perfect.jfif" alt="Perfect">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Perfect</h3>
+            <p class="card-description">Camila Cabello</p>
+            <a href="songs/song3.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Tauba_Tauba.jpg" alt="Tauba Tauba">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Tauba Tauba</h3>
+            <p class="card-description">Karan Aujla</p>
+            <a href="songs/song4.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Sia_Snowman_.jpeg" alt="Snowman">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Snowman</h3>
+            <p class="card-description">Sia</p>
+            <a href="songs/song5.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/unstoppable.jfif" alt="Unstoppable">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Unstoppable</h3>
+            <p class="card-description">Sia</p>
+            <a href="songs/song6.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/naina.jpg" alt="Naina">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Naina</h3>
+            <p class="card-description">Diljit Dosanjh, Ft. Badshah</p>
+            <a href="songs/song7.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/ka_albumare.jpg" alt="Admirin' You">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Admirin' You</h3>
+            <p class="card-description">Karan Aujla</p>
+            <a href="songs/song8.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/TaylorSwift-Lover.png" alt="Lovers">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Lovers</h3>
+            <p class="card-description">Taylor Swift - Feat. Shawn Mendes</p>
+            <a href="songs/song9.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Closer by The chainsmokers, Halsey.jfif" alt="Closer">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Closer</h3>
+            <p class="card-description">The chainsmokers, Halsey</p>
+            <a href="songs/song10.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Softly.jpg" alt="Softly">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Softly</h3>
+            <p class="card-description"> Karan Aujla</p>
+            <a href="songs/song11.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Tainu Khabar Nahi.jpg" alt="Tainu Khabar Nahi">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Tainu Khabar Nahi</h3>
+            <p class="card-description"> Arijit Singh</p>
+            <a href="songs/song12.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/ka_albumare.jpg" alt="White Brown Black">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">White Brown Black</h3>
+            <p class="card-description"> Karan Aujla</p>
+            <a href="songs/song13.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/TaylorSwift-Lover.png" alt="Paper Rings">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Paper Rings</h3>
+            <p class="card-description"> Taylor Swift</p>
+            <a href="songs/song14.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/khoobsurat.jfif" alt="Khoobsurat">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Khoobsurat</h3>
+            <p class="card-description"> Vishal Mishra, Sachin-Jigar, Amitabh Bhattacharya</p>
+            <a href="songs/song15.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/tumhare hi rahenge hum.jfif" alt="Tumhare Hi Rahenge Hum">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Tumhare Hi Rahenge Hum</h3>
+            <p class="card-description">Amitabh Bhattacharya, Sachin-Jigar, Varun Jain and Shilpa Rao</p>
+            <a href="songs/song16.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/favorite.jfif" alt="Favorite">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Favorite</h3>
+            <p class="card-description">Isabel LaRosa</p>
+            <a href="songs/song17.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Hum Toh Deewane.jfif" alt="Hum Toh Deewane">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Hum Toh Deewane</h3>
+            <p class="card-description">Rajat Nagpal</p>
+            <a href="songs/song18.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Please Please Please.jfif" alt="Please Please Please">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Please Please Please</h3>
+            <p class="card-description">Sabrina Carpenter</p>
+            <a href="songs/song19.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/God Damn.jfif" alt="God Damn">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">God Damn</h3>
+            <p class="card-description">Badshah, Karan Aujla, Hiten</p>
+            <a href="songs/song20.html" class="Play">Play</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-image">
+            <img src="media/Tu Hain Toh.jfif" alt="Tu Hain Toh">
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">Tu Hain Toh</h3>
+            <p class="card-description">Hunny Bunny, Sagar</p>
+            <a href="songs/song21.html" class="Play">Play</a>
+        </div>
+    </div>
+</div>
+
+<div class="Bottom">
+    <p>&copy; 2024 Celestial Symphony</p>
+</div>
+
+<script>
+    // JavaScript to hide the overlay after the animation completes
+    setTimeout(() => {
+      const logoOverlay = document.getElementById('logoOverlay');
+      logoOverlay.style.display = 'none';
+    }, 5000); // Adjust to control the overlay duration
+    // JavaScript function to toggle the sidebar
+    function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.style.left = sidebar.style.left === "0px" ? "-250px" : "0px";
+    }
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const songCards = document.querySelectorAll('.card');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        songCards.forEach(card => {
+            const artistName = card.querySelector('.card-description').textContent.toLowerCase();
+            if (artistName.includes(searchTerm)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

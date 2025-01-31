@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(to right, rgba(255, 223, 186, 0.5), #1e3c72);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 10px;
+        }
+        .music-player {
+            background: #fff;
+            width: 400px;
+            padding: 20px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 10px 60px black;
+            position: relative;
+        }
+        .now-playing {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            color: #555454;
+        }
+        .heart-icon, .video-icon {
+            position: absolute;
+            color: #1e3c72;
+            cursor: pointer;
+        }
+        .video-icon {
+            top: 20px;
+            left: 20px;
+        }
+        .heart-icon {
+            top: 20px;
+            right: 20px;
+        }
+        .music-player .song-img {
+            width: 90%;
+            border-radius: 15%;
+            border: 2px solid #fff;
+            box-shadow: 0 10px 60px black;
+            margin: 10px 0;
+        }
+        .music-player h1 class="Artist" {
+            font-size: 21px;
+            font-weight: 400;
+            color: #131313;
+            margin-top: 5px;
+        }
+        .music-player p {
+            font-size: 17px;
+            color: #333;
+            opacity: 0.9; 
+        }
+        #progress {
+            width: 100%;
+            height: 6px;
+            background: #1e3c72;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            color: #1e3c72;
+            margin-top: 20px;
+        }
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+        .control-btn.play {
+            transform: scale(1.5);
+            background: #1e3c72;
+            color: #fff;
+            font-size: 1.5em;
+        }
+
+        #volumeSlider {
+            width: 100px;
+            height: 6px;
+            background: #1e3c72;
+            border-radius: 4px;
+            cursor: pointer;
+            display: none; /* Hidden initially, displayed on volume icon click */
+            margin-top: 10px;
+        }
+
+        .volume-icon {
+            cursor: pointer;
+            font-size: 24px;
+            color: #1e3c72;
+        }
+        /* Music List Icon */
+        .music-list-icon {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 24px;
+            color: #1e3c72;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Music List Pop-up */
+        .music-list {
+            display: none;
+            position: absolute;
+            bottom: 80px;
+            width: 90%;
+            max-height: 300px; /* Set max height for the list */
+            overflow-y: auto; /* Enable vertical scrolling */
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            text-align: left;
+            z-index: 10;
+        }
+
+        /* Scrollbar Customization */
+        .music-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .music-list::-webkit-scrollbar-thumb {
+            background-color: #1e3c72;
+            border-radius: 5px;
+        }
+
+        .music-list::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+        }
+
+        .music-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+
+        .music-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .music-list ul li {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .music-list ul li a {
+            text-decoration: none;
+            color: #1e3c72;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .music-list ul li span {
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .close-icon {
+            font-size: 24px;
+            cursor: pointer;
+            color: #1e3c72;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="music-player">
+        <!-- Video icon with a link to another website -->
+        <a href="https://youtu.be/6d5SS0gS5bU?feature=shared" target="_blank" class="video-icon" title="Video">
+            <i class="material-icons">ondemand_video</i>
+        </a>
+        <div class="now-playing">
+            <h5>Now Playing</h5>
+        </div>
+        <i class="material-icons heart-icon" id="heartIcon" onclick="toggleHeart()" title="Like">favorite_border</i>
+
+        <img src="/media/Tainu Khabar Nahi.jpg" class="song-img">
+        <h1><strong>Tainu Khabar Nahi </strong></h1>
+        <p>Arijit Singh</p>
+
+        <audio id="song" autoplay>
+            <source src="/media/Arijit Singh_ Tainu Khabar Nahi (Lyrics)  Munjya  Sachin-Jigar, Amitabh Bhattacharya.mp3" type="audio/mpeg">
+        </audio>
+        <input type="range" value="0" id="progress">
+
+        <div class="controls">
+            <div><i class="material-icons volume-icon" id="volumeIcon" title="Volume">volume_up</i>
+            </div>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+            <div class="control-btn" onclick="goToPreviousSong()"><i class="material-icons">skip_previous</i></div>
+            <div class="control-btn play" onclick="playPause()"><i class="material-icons" id="ctrlIcon">pause</i></div>
+            <div class="control-btn" onclick="goToNextSong()"><i class="material-icons">skip_next</i></div>
+             <!-- Music List Icon -->
+            <div onclick="toggleMusicList()" title="Music List">
+                <i class="material-icons">queue_music</i>
+            </div>
+
+            <!-- Music List Pop-up -->
+            <div class="music-list" id="musicList">
+                <div class="music-list-header">
+                    <h5>Music List</h5>
+                    <i class="material-icons close-icon" onclick="toggleMusicList()">close</i>
+                </div>
+                <ul>
+                    <li><a href="/songs/song1.html">Closer - August Moon <span>3:30</span></a></li>
+                    <li><a href="/songs/song2.html">Jee Ni Lagda - Karan Aujla <span>3:05</span></a></li>
+                    <li><a href="/songs/song3.html">Perfect - Camila Cabello<span>3:08</span></a></li>
+                    <li><a href="/songs/song4.html">Tauba Tauba - Karan Aujla <span>3:48</span></a></li>
+                    <li><a href="/songs/song5.html">Snowman - Sia<span>4:00</span></a></li>
+                    <li><a href="/songs/song6.html">Unstoppable - Sia <span>3:45</span></a></li>
+                    <li><a href="/songs/song7.html">Naina - Diljit Dosanjh, Ft. Badshah <span>2:55</span></a></li>
+                    <li><a href="/songs/song8.html">Admirin' You - Karan Aujla <span>3:30</span></a></li>
+                    <li><a href="/songs/song9.html">Lovers - Taylor Swift - Feat. Shawn Mendes <span>3:36</span></a></li>
+                    <li><a href="/songs/song10.html">Closer - The chainsmokers, Halsey <span>3:05</span></a></li>
+                    <li><a href="/songs/song11.html">Softly - Karan Aujla <span>3:08</span></a></li>
+                    <li><a href="/songs/song12.html">Tainu Khabar Nahi - Arijit Singh <span>3:48</span></a></li>
+                    <li><a href="/songs/song13.html">White Brown Black - Karan Aujla <span>4:00</span></a></li>
+                    <li><a href="/songs/song14.html">Paper Rings - Taylor Swift <span>3:45</span></a></li>
+                    <li><a href="/songs/song15.html">Khoobsurat - Vishal Mishra, Sachin-Jigar, Amitabh Bhattacharya <span>2:55</span></a></li>
+                    <li><a href="/songs/song16.html">Tumhare Hi Rahenge Hum - Amitabh Bhattacharya, Sachin-Jigar, Varun Jain and Shilpa Rao <span>3:30</span></a></li>
+                    <li><a href="/songs/song17.html">Favorite - Isabel LaRosa <span>3:30</span></a></li>
+                    <li><a href="/songs/song18.html">Hum Toh Deewane - Rajat Nagpal <span>3:30</span></a></li>
+                    <li><a href="/songs/song19.html">Please Please Please - Sabrina Carpenter <span>3:30</span></a></li>
+                    <li><a href="/songs/song20.html">God Damn - Badshah, Karan Aujla, Hiten  <span>3:30</span></a></li>
+                    <li><a href="/songs/song21.html">Tu Hain Toh - Hunny Bunny, Sagar <span>3:30</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const song = document.getElementById("song");
+        const progress = document.getElementById("progress");
+        const ctrlIcon = document.getElementById("ctrlIcon");
+        const heartIcon = document.getElementById("heartIcon");
+        const musicList = document.getElementById("musicList");
+        const songTitle = "Tainu Khabar Nahi - Arijit Singh"; // Update this for each song page
+        const volumeIcon = document.getElementById("volumeIcon");
+        const volumeSlider = document.getElementById("volumeSlider");
+
+        song.onloadedmetadata = () => progress.max = song.duration;
+
+        function playPause() {
+            if (song.paused) {
+                song.play();
+                ctrlIcon.textContent = "pause";
+            } else {
+                song.pause();
+                ctrlIcon.textContent = "play_arrow";
+            }
+        }
+
+        song.addEventListener("timeupdate", () => progress.value = song.currentTime);
+        progress.oninput = () => song.currentTime = progress.value;
+
+        function goToPreviousSong() {
+            window.location.href = "/songs/song11.html"; // Redirect to song3.html
+        }
+
+        function goToNextSong() {
+            window.location.href = "/songs/song13.html"; // Redirect to song2.html
+        }
+
+
+        function toggleMusicList() {
+            if (musicList.style.display === "block") {
+                musicList.style.display = "none";
+            } else {
+                musicList.style.display = "block";
+            }
+        }
+
+        song.addEventListener("ended", () => {
+            window.location.href = "/songs/song13.html"; // Redirect to the next song (update as needed)
+        });
+
+        // Initialize icon based on localStorage
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        if (favorites.includes(songTitle)) {
+            heartIcon.textContent = "favorite"; // Solid heart if already liked
+        }
+
+        function toggleHeart() {
+            const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+            if (favorites.includes(songTitle)) {
+                // Remove from favorites
+                const index = favorites.indexOf(songTitle);
+                favorites.splice(index, 1);
+                heartIcon.textContent = "favorite_border"; // Change to outline heart
+            } else {
+                // Add to favorites
+                favorites.push(songTitle);
+                heartIcon.textContent = "favorite"; // Change to solid heart
+            }
+            localStorage.setItem("favorites", JSON.stringify(favorites));
+        }
+
+        // Volume control functionality
+        volumeIcon.addEventListener("click", () => {
+            // Toggle the visibility of the volume slider
+            volumeSlider.style.display = volumeSlider.style.display === "none" ? "block" : "none";
+        });
+
+        // Adjust volume based on slider value
+        volumeSlider.addEventListener("input", (event) => {
+            song.volume = event.target.value;
+            updateVolumeIcon(event.target.value);
+        });
+
+        // Update volume icon based on volume level
+        function updateVolumeIcon(volume) {
+            if (volume == 0) {
+                volumeIcon.textContent = "volume_off";
+            } else if (volume < 0.5) {
+                volumeIcon.textContent = "volume_down";
+            } else {
+                volumeIcon.textContent = "volume_up";
+            }
+        }
+
+    </script>
+</body>
+</html>
